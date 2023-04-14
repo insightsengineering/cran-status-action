@@ -75,6 +75,7 @@ runs:
       with:
         fetch-depth: 0
         path: cran_status_branch_subdirectory
+        ref: cran_status
 
     - name: Check for new CRAN statuses
       id: cran_errors_status
