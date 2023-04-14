@@ -81,7 +81,6 @@ runs:
       id: cran_errors_status
       run: |
         cd $GITHUB_WORKSPACE
-        ls -la
         Rscript ${GITHUB_ACTION_PATH}/check-status.R -p "${{ steps.current_package.outputs.package_name }}" -s "${{ inputs.statuses }}"
         new_errors=false
         cran_status_path="./cran_errors.csv"
@@ -116,13 +115,13 @@ runs:
         echo "new_errors=$new_errors" >> $GITHUB_OUTPUT
       shell: bash
 
-    # - name: Report Status
-    #   if: ${{ steps.cran_errors_status.outputs.new_errors == 'true' }}
-    #   uses: peter-evans/create-issue-from-file@v4
-    #   with:
-    #     title: "URGENT! Failed CRAN Checks: ${{ steps.today.outputs.date }}"
-    #     content-filepath: ./cran-status.md
-    #     assignees: ${{ inputs.issue-assignees }}
+    - name: Report Status
+      if: ${{ steps.cran_errors_status.outputs.new_errors == 'true' }}
+      uses: peter-evans/create-issue-from-file@v4
+      with:
+        title: "URGENT! Failed CRAN Checks: ${{ steps.today.outputs.date }}"
+        content-filepath: ./cran-status.md
+        assignees: ${{ inputs.issue-assignees }}
 
     - name: Add new CSV files
       if: ${{ steps.cran_errors_status.outputs.new_errors == 'true' }}
