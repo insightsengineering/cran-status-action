@@ -81,7 +81,7 @@ runs:
     - name: Check for new CRAN statuses
       id: cran_errors_status
       run: |
-        cd ${{ github.workspace }}
+        cd $GITHUB_WORKSPACE
         Rscript check-status.R -p "${{ steps.current_package.outputs.package_name }}" -s "${{ inputs.statuses }}"
         new_errors=false
         cran_status_path="./cran_errors.csv"
