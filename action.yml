@@ -65,28 +65,26 @@ runs:
           git reset
           git add --all -f
           git commit -m "Initialize orphan cran_status branch"
-          orphan_exists='false'
           git push --set-upstream origin cran_status
-          echo "repo_location=/tmp/${{ github.sha }}" >> $GITHUB_OUTPUT
-        } else {
-          echo "🟢 cran_status branch exists!"
-          orphan_exists='true'
-          cp check-status.R /tmp/
-          git checkout cran_status
-          echo "repo_location=${PWD}" >> $GITHUB_OUTPUT
         }
         fi
-        echo "orphan_exists=$orphan_exists" >> $GITHUB_OUTPUT
       shell: bash
+
+    - name: Checkout repo
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        path: cran_status_branch_subdirectory
 
     - name: Check for new CRAN statuses
       id: cran_errors_status
       run: |
         cd $GITHUB_WORKSPACE
-        Rscript /tmp/check-status.R -p "${{ steps.current_package.outputs.package_name }}" -s "${{ inputs.statuses }}"
+        ls -la
+        Rscript check-status.R -p "${{ steps.current_package.outputs.package_name }}" -s "${{ inputs.statuses }}"
         new_errors=false
         cran_status_path="./cran_errors.csv"
-        cran_status_directory_path="${{ steps.create_orphan.outputs.repo_location }}/cran_status"
+        cran_status_directory_path="cran_status_branch_subdirectory/cran_status"
         if [  -e ./cran_errors.csv ]; then
           current_status_content=$(cat "./cran_errors.csv")
           mkdir -p $cran_status_directory_path
@@ -128,7 +126,7 @@ runs:
     - name: Add new CSV files
       if: ${{ steps.cran_errors_status.outputs.new_errors == 'true' }}
       run: |
-        cd ${{ steps.create_orphan.outputs.repo_location }}
+        cd cran_status_branch_subdirectory
         git config --global --add safe.directory ${PWD}
         git add "./cran_status/${{ steps.today.outputs.date }}.csv"
       shell: bash
@@ -140,4 +138,4 @@ runs:
         commit_message: update cran status "${{ steps.today.outputs.date }}"
         branch: cran_status
         create_branch: false
-        repository: ${{ steps.create_orphan.outputs.repo_location }}
+        repository: cran_status_branch_subdirectory
