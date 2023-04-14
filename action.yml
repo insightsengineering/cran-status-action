@@ -55,7 +55,7 @@ runs:
         cran_status_branch=$(git branch -a --list cran_status)
         # Try to create a new orphan branch if it does not already exist
         if [ -z "${cran_status_branch}" ]
-        then {${{ github.workspace }}
+        then {
           echo "🟡 Create cran_status branch"
           git checkout --orphan cran_status
           mkdir -p /tmp/${{ github.sha }}
