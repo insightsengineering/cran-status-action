@@ -71,6 +71,7 @@ runs:
         } else {
           echo "🟢 cran_status branch exists!"
           orphan_exists='true'
+          cp check-status.R /tmp/
           git checkout cran_status
           echo "repo_location=${PWD}" >> $GITHUB_OUTPUT
         }
@@ -82,7 +83,7 @@ runs:
       id: cran_errors_status
       run: |
         cd $GITHUB_WORKSPACE
-        Rscript check-status.R -p "${{ steps.current_package.outputs.package_name }}" -s "${{ inputs.statuses }}"
+        Rscript /tmp/check-status.R -p "${{ steps.current_package.outputs.package_name }}" -s "${{ inputs.statuses }}"
         new_errors=false
         cran_status_path="./cran_errors.csv"
         cran_status_directory_path="${{ steps.create_orphan.outputs.repo_location }}/cran_status"
