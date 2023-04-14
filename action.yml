@@ -82,7 +82,7 @@ runs:
       run: |
         cd $GITHUB_WORKSPACE
         ls -la
-        Rscript check-status.R -p "${{ steps.current_package.outputs.package_name }}" -s "${{ inputs.statuses }}"
+        Rscript ${GITHUB_ACTION_PATH}/check-status.R -p "${{ steps.current_package.outputs.package_name }}" -s "${{ inputs.statuses }}"
         new_errors=false
         cran_status_path="./cran_errors.csv"
         cran_status_directory_path="cran_status_branch_subdirectory/cran_status"
