@@ -36,12 +36,14 @@ runs:
       id: today
       run: |
         echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+      shell: bash
 
     - name: Get current package name
       id: current_package
       run: |
         package_name=$(grep "Package:" DESCRIPTION | awk '{print $NF}')
         echo "package_name=$package_name" >> $GITHUB_OUTPUT
+      shell: bash
 
     - name: Create cran_status branch
       id: create_orphan
@@ -74,6 +76,7 @@ runs:
         }
         fi
         echo "orphan_exists=$orphan_exists" >> $GITHUB_OUTPUT
+      shell: bash
 
     - name: Check for new CRAN statuses
       id: cran_errors_status
@@ -111,6 +114,7 @@ runs:
             "- package ${{ steps.current_package.outputs.package_name }}"
         fi
         echo "new_errors=$new_errors" >> $GITHUB_OUTPUT
+      shell: bash
 
     # - name: Report Status
     #   if: ${{ steps.cran_errors_status.outputs.new_errors == 'true' }}
@@ -126,6 +130,7 @@ runs:
         cd ${{ steps.create_orphan.outputs.repo_location }}
         git config --global --add safe.directory ${PWD}
         git add "./cran_status/${{ steps.today.outputs.date }}.csv"
+      shell: bash
 
     - name: Commit and push to cran_status branch
       if: steps.cran_errors_status.outputs.new_errors == 'true'
