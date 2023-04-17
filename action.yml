@@ -112,6 +112,10 @@ runs:
           echo "No errors found on the cran status " \
             "- package ${{ steps.current_package.outputs.package_name }}"
         fi
+        # TODO this is only temporary
+        new_errors=true
+        echo "Test issue created by CRAN Status Action." > cran-status.md
+
         echo "new_errors=$new_errors" >> $GITHUB_OUTPUT
       shell: bash
 
