@@ -1,5 +1,5 @@
 <!-- BEGIN_ACTION_DOC -->
-# CRAN Status Check
+# CRAN Status Monitor
 
 ### Description
 Creates a summary of issues reported on the CRAN status check page for a given R package
@@ -7,13 +7,6 @@ Creates a summary of issues reported on the CRAN status check page for a given R
 Docker
 
 ### Inputs
-* `package`:
-
-  _Description_: Package name of the current R package deployed to CRAN
-
-
-  _Required_: `true`
-
 * `statuses`:
 
   _Description_: Create an issue if one or more of the following
@@ -26,6 +19,36 @@ Allowed statuses are 'NOTE', 'WARN', and 'ERROR'
 
   _Default_: `ERROR`
 
+* `issue-assignees`:
+
+  _Description_: To whom should the issue be assigned to if errors are
+encountered in the CRAN status checks?
+This is a comma-separated string of GitHub usernames.
+If undefined or empty, no assignments are made.
+
+
+  _Required_: `false`
+
 ### Outputs
 None
 <!-- END_ACTION_DOC -->
+
+### Example usage:
+```yaml
+jobs:
+  cran-status:
+    name: Check Status
+    runs-on: ubuntu-latest
+    container:
+      image: rocker/tidyverse:latest
+    steps:
+      - name: Run CRAN Status Action
+        uses: insightsengineering/cran-status-action@main
+        with:
+          statuses: "ERROR"
+          issue-assignees: "username1"
+```
+
+We acknowledge that a similar action, based on code from [pharmaverse/admiralci](https://github.com/pharmaverse/admiralci) repository, has been created: https://github.com/dieghernan/cran-status-check.
+
+The action contained in this repository is simply our take on how to perform the CRAN status check 😄

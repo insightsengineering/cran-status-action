@@ -1,5 +1,5 @@
-name: CRAN Status Check
-description: Creates a summary of issues reported on the CRAN status check page for a given R package
+name: CRAN Status Monitor
+description: Creates a summary of issues reported on the CRAN status check page for a given R package.
 
 inputs:
   statuses:
@@ -13,7 +13,7 @@ inputs:
     type: string
   issue-assignees:
     description: |
-      Whom should the issue be assigned to if errors are
+      To whom should the issue be assigned to if errors are
       encountered in the CRAN status checks?
       This is a comma-separated string of GitHub usernames.
       If undefined or empty, no assignments are made.
