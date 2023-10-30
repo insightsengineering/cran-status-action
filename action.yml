@@ -130,10 +130,10 @@ runs:
     - name: Add new CSV files
       if: ${{ steps.cran_errors_status.outputs.new_errors == 'true' }}
       run: |
-        cd cran_status_branch_subdirectory
         git config --global --add safe.directory ${PWD}
         git add "./cran_status/${{ steps.today.outputs.date }}.csv"
       shell: bash
+      working-directory: cran_status_branch_subdirectory
 
     - name: Commit and push to cran_status branch
       if: steps.cran_errors_status.outputs.new_errors == 'true'
