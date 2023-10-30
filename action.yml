@@ -10,7 +10,6 @@ inputs:
       Allowed statuses are 'NOTE', 'WARN', and 'ERROR'
     default: 'ERROR'
     required: false
-    type: string
   issue-assignees:
     description: |
       To whom should the issue be assigned to if errors are
@@ -19,7 +18,12 @@ inputs:
       If undefined or empty, no assignments are made.
     default: ''
     required: false
-    type: string
+  path:
+    description: |
+      Path to the R package root, if the package is not at the
+      top level of the repository.
+    default: '.'
+    required: false
 
 branding:
   icon: 'bell'
@@ -34,8 +38,7 @@ runs:
 
     - name: Get Date
       id: today
-      run: |
-        echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+      run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
       shell: bash
 
     - name: Get current package name
@@ -44,6 +47,7 @@ runs:
         package_name=$(grep "Package:" DESCRIPTION | awk '{print $NF}')
         echo "package_name=$package_name" >> $GITHUB_OUTPUT
       shell: bash
+      working-directory: ${{ inputs.path }}
 
     - name: Create cran_status branch
       id: create_orphan
@@ -83,7 +87,7 @@ runs:
         cd $GITHUB_WORKSPACE
         Rscript ${GITHUB_ACTION_PATH}/check-status.R -p "${{ steps.current_package.outputs.package_name }}" -s "${{ inputs.statuses }}"
         new_errors=false
-        cran_status_path="./cran_errors.csv"
+        cran_status_path="${{ inputs.path }}/cran_errors.csv"
         cran_status_directory_path="cran_status_branch_subdirectory/cran_status"
         if [  -e ./cran_errors.csv ]; then
           current_status_content=$(cat "./cran_errors.csv")
@@ -120,16 +124,16 @@ runs:
       uses: peter-evans/create-issue-from-file@v4
       with:
         title: "URGENT! Failed CRAN Checks: ${{ steps.today.outputs.date }}"
-        content-filepath: ./cran-status.md
+        content-filepath: ./${{ inputs.path }}/cran-status.md
         assignees: ${{ inputs.issue-assignees }}
 
     - name: Add new CSV files
       if: ${{ steps.cran_errors_status.outputs.new_errors == 'true' }}
       run: |
-        cd cran_status_branch_subdirectory
         git config --global --add safe.directory ${PWD}
         git add "./cran_status/${{ steps.today.outputs.date }}.csv"
       shell: bash
+      working-directory: cran_status_branch_subdirectory
 
     - name: Commit and push to cran_status branch
       if: steps.cran_errors_status.outputs.new_errors == 'true'
