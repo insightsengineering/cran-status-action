@@ -32,7 +32,7 @@ runs:
   using: composite
   steps:
     - name: Checkout repo
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
@@ -75,7 +75,7 @@ runs:
       shell: bash
 
     - name: Checkout repo
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
         path: cran_status_branch_subdirectory
@@ -121,7 +121,7 @@ runs:
 
     - name: Report Status
       if: ${{ steps.cran_errors_status.outputs.new_errors == 'true' }}
-      uses: peter-evans/create-issue-from-file@v4
+      uses: peter-evans/create-issue-from-file@v5
       with:
         title: "URGENT! Failed CRAN Checks: ${{ steps.today.outputs.date }}"
         content-filepath: ./${{ inputs.path }}/cran-status.md
@@ -137,7 +137,7 @@ runs:
 
     - name: Commit and push to cran_status branch
       if: steps.cran_errors_status.outputs.new_errors == 'true'
-      uses: stefanzweifel/git-auto-commit-action@v4
+      uses: stefanzweifel/git-auto-commit-action@v5
       with:
         commit_message: update cran status "${{ steps.today.outputs.date }}"
         branch: cran_status
